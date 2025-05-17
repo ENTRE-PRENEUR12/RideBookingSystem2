@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import com.cg.RideBookingSystem.dao.*;
 import com.cg.RideBookingSystem8.entities.*;
 import com.cg.RideBookingSystem8.exceptions.InvalidRideException;
 
@@ -23,15 +23,22 @@ public class RideBookingSystem {
     private List<Customer> customers = new ArrayList<Customer>();
     private List<Driver> drivers = new ArrayList<Driver>();
     private List<Ride> rides = new ArrayList<Ride>();
+	private CustomerDAO customerDAO;
+    private DriverDAO driverDAO;
+    private RideDAO rideDAO;
     
+    public RideBookingSystem(CustomerDAO customerDAO, DriverDAO driverDAO, RideDAO rideDAO) {
+        this.customerDAO = customerDAO;
+        this.driverDAO = driverDAO;
+        this.rideDAO = rideDAO;
+    }
     
     /**
      * Method to register the customer.
      * @param customer
      */
-    public void registerCustomer(Customer customer) 
-    {
-        customers.add(customer);
+    public void registerCustomer(Customer customer) {
+        customerDAO.save(customer);
     }
     
     /**
@@ -40,7 +47,7 @@ public class RideBookingSystem {
      */
 
     public void registerDriver(Driver driver) {
-        drivers.add(driver);
+        driverDAO.save(driver);
     }
 
     
@@ -51,16 +58,25 @@ public class RideBookingSystem {
      */
     
     public Ride bookRide(Customer customer) {
-    	Optional<Driver> driverOpt = drivers.stream().filter(Driver::isAvailable).findFirst();
-    	if(driverOpt.isEmpty()) {
-    		throw new InvalidRideException("No available Drivers..");
-    	}
-    	
-    	Driver d = driverOpt.get();
-    	d.setAvailable(false);
-    	Ride ride = new Ride(customer, d);
-    	return ride;
+        List<Driver> availableDrivers = driverDAO.findAll();
+        Driver availableDriver = null;
+        for (Driver driver : availableDrivers) {
+            if (driver.isAvailable()) {
+                availableDriver = driver;
+                driver.setAvailable(false);  // Mark driver as unavailable
+                break;
+            }
+        }
+        
+        if (availableDriver == null) {
+            throw new InvalidRideException("No available Drivers.");
+        }
+        Ride ride = new Ride(customer, availableDriver);
+        rideDAO.save(ride);
+        return ride;
     }
+    
+    
     
     
      /**
@@ -144,12 +160,12 @@ public class RideBookingSystem {
             customer.ShowProfile();
         }
     }
-    
+//    
     /**
      * method to return the customers in list format
      */
     public List<Customer> getCustomers() {
-        return customers;
+        return customerDAO.findAll();
     }
     
     /**
@@ -166,7 +182,15 @@ public class RideBookingSystem {
      * @return
      */
     
-    public List<Driver> driverList(){
-    	return this.drivers;
+    public List<Driver> getDrivers() {
+        return driverDAO.findAll();
+    }
+    
+    /**
+     * method to return the rides in list format
+     * @return
+     */
+    public List<Ride> getRides() {
+        return rideDAO.findAll();
     }
 }

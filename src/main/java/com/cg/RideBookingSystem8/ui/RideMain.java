@@ -7,7 +7,7 @@ import com.cg.RideBookingSystem8.entities.Driver;
 import com.cg.RideBookingSystem8.entities.Ride;
 import com.cg.RideBookingSystem8.exceptions.InvalidRideException;
 import com.cg.RideBookingSystem8.service.RideBookingSystem;
-
+import com.cg.RideBookingSystem.dao.*;
 
 
 
@@ -32,7 +32,11 @@ public class RideMain {
 	
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
-        RideBookingSystem system = new RideBookingSystem();
+//        RideBookingSystem system = new RideBookingSystem();
+        CustomerDAO customerDAO = new CustomerDAOImpl();
+        DriverDAO driverDAO = new DriverDAOImpl();
+        RideDAO rideDAO = new RideDAOImpl();
+        RideBookingSystem system = new RideBookingSystem(customerDAO, driverDAO, rideDAO);
         system.loadDriversFromFile();
 
         String nameFormat = "^[a-zA-Z]+$";
