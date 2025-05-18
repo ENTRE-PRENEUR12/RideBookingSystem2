@@ -1,8 +1,5 @@
 
 package com.cg.RideBookingSystem8.service;
-import com.cg.RideBookingSystem.exceptions.*;
-
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,6 +13,7 @@ import com.cg.RideBookingSystem8.dao.CustomerDAO;
 import com.cg.RideBookingSystem8.dao.DriverDAO;
 import com.cg.RideBookingSystem8.dao.RideDAO;
 import com.cg.RideBookingSystem8.entities.*;
+import com.cg.RideBookingSystem8.exceptions.*;
 
 /**
  * Class RideBookingSystem manages the entire booking process of a ride properly.

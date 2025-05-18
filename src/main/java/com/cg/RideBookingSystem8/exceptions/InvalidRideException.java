@@ -1,4 +1,4 @@
-package com.cg.RideBookingSystem.exceptions;
+package com.cg.RideBookingSystem8.exceptions;
 /**
  * Custom exception class to print a message when exception occurs
  * @author Aniket Adhikari

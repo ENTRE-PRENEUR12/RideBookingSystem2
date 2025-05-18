@@ -1,12 +1,12 @@
 package com.cg.RideBookingSystem8.service;
 
-import com.cg.RideBookingSystem.exceptions.InvalidRideException;
 import com.cg.RideBookingSystem8.dao.CustomerDAO;
 import com.cg.RideBookingSystem8.dao.DriverDAO;
 import com.cg.RideBookingSystem8.dao.RideDAO;
 import com.cg.RideBookingSystem8.entities.Customer;
 import com.cg.RideBookingSystem8.entities.Driver;
 import com.cg.RideBookingSystem8.entities.Ride;
+import com.cg.RideBookingSystem8.exceptions.InvalidRideException;
 
 import org.junit.Before;
 import org.junit.Test;
