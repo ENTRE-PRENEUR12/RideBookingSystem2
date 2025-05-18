@@ -1,78 +1,84 @@
 package com.cg.RideBookingSystem8.entities;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- * Unit test class for testing the Driver entity.
- * Verifies the correctness of getter, setter, and constructor methods of the Driver class.
+ * Unit tests for the Driver class to verify constructor, getters, setters,
+ * and output methods.
  * 
- * Author: Sourav Mandol
+ * @author Sourav Mandal
  */
 public class DriverTest {
 
-    private Driver driver;
+    private Driver driver1;
+    private Driver driver2;
 
     /**
-     * Sets up the Driver instance before each test.
-     * Initializes a Driver object with ID "D001", name "Alice", and availability as true.
+     * Initializes two Driver objects before each test.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
-        driver = new Driver("D001", "Alice", true);
+        driver1 = new Driver("D001", "John", true);
+        driver2 = new Driver("D002", "Doe", false);
     }
 
     /**
-     * Tests the constructor and getter methods of the Driver class.
-     * Verifies that the initial values set through the constructor are correctly retrieved.
+     * Tests the Driver constructor and the getter methods.
+     * Verifies that the initial availability, ID, and name are correctly set.
      */
     @Test
-    public void testConstructorAndGetters() {
-        assertEquals("D001", driver.getID());
-        assertEquals("Alice", driver.getName());
-        assertTrue(driver.isAvailable());
+    public void testConstructorAndGetter() {
+        assertTrue(driver1.isAvailable());
+        assertEquals("D001", driver1.getID());
+        assertEquals("John", driver1.getName());
     }
 
     /**
-     * Tests the setID method of the Driver class.
-     * Verifies that the driver's ID is correctly updated.
+     * Tests the setter and getter for the availability status of a Driver.
+     * Verifies that availability can be toggled properly.
      */
     @Test
-    public void testSetID() {
-        driver.setID("D002");
-        assertEquals("D002", driver.getID());
+    public void testSetAvailable() {
+        driver1.setAvailable(false);
+        assertFalse(driver1.isAvailable());
+
+        driver1.setAvailable(true);
+        assertTrue(driver1.isAvailable());
     }
 
     /**
-     * Tests the setName method of the Driver class.
-     * Verifies that the driver's name is correctly updated.
+     * Tests the output of the ShowProfile method.
+     * Captures system output and verifies expected content is printed.
      */
     @Test
-    public void testSetName() {
-        driver.setName("Bob");
-        assertEquals("Bob", driver.getName());
+    public void testShowProfileOutput() {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        driver1.ShowProfile();
+
+        String expectedOutput = "Driver name and ID: \n [ Driver name : John Driver ID : D001";
+        assertTrue(outContent.toString().contains(expectedOutput));
+
+        System.setOut(System.out); // Reset System.out to original
     }
 
     /**
-     * Tests the setAvailable method of the Driver class.
-     * Verifies that the driver's availability status is correctly updated.
+     * Tests the getdDriverId method to ensure it returns non-null,
+     * unique IDs for different Driver instances.
      */
     @Test
-    public void testSetAvailability() {
-        driver.setAvailable(false);
-        assertFalse(driver.isAvailable());
+    public void testGetdDriverId() {
+        String id1 = driver1.getdDriverId();
+        String id2 = driver2.getdDriverId();
+        assertNotNull(id1);
+        assertNotNull(id2);
+        assertNotEquals(id1, id2);
     }
-
-    /*
-     * @Test
-     * public void testShowProfileOutput() {
-     *     // Tests the output of ShowProfile method (commented out).
-     *     // Would typically verify printed output using stream redirection.
-     * }
-     */
 }

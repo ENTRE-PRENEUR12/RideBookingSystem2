@@ -1,5 +1,6 @@
 
 package com.cg.RideBookingSystem8.service;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -78,14 +79,14 @@ public class RideBookingSystem {
     }
     
     
-    
+   
     
      /**
       * Saves the rides in a file.
       * @throws Exception
       */
     public void saveRides(){
-        String path = "C:\\Users\\Prateek\\OneDrive\\Desktop\\Users\\rides.txt";
+        String path = "C:\\Users\\SOUMYODIP SUTRADHAR\\OneDrive\\Desktop\\Uber\\rides.txt";
         File file = new File(path);
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
@@ -104,7 +105,7 @@ public class RideBookingSystem {
      * @throws Exception
      */
     public void loadDriversFromFile(){
-        String path = "C:\\Users\\Prateek\\OneDrive\\Desktop\\Users\\drivers.txt";
+        String path = "C:\\Users\\SOUMYODIP SUTRADHAR\\OneDrive\\Desktop\\Uber\\driver.txt";
         File file = new File(path);
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -129,7 +130,7 @@ public class RideBookingSystem {
      */
 
     public void saveDriversToFile(){
-        String path = "C:\\Users\\Prateek\\OneDrive\\Desktop\\Users\\drivers.txt";
+        String path = "C:\\Users\\SOUMYODIP SUTRADHAR\\OneDrive\\Desktop\\Uber\\driver.txt";
         File file = new File(path);
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) {

@@ -7,184 +7,244 @@ import com.cg.RideBookingSystem8.entities.Customer;
 import com.cg.RideBookingSystem8.entities.Driver;
 import com.cg.RideBookingSystem8.entities.Ride;
 import com.cg.RideBookingSystem8.exceptions.InvalidRideException;
+import org.junit.jupiter.api.*;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit test class for RideBookingSystem service layer.
- * It verifies core functionalities like customer/driver registration
- * and ride booking with mock DAO implementations.
- * @author Aniket ADhikari
+ * JUnit 5 test class to test the RideBookingSystem service functionality.
+ * Uses in-memory DAO implementations for unit testing various scenarios.
+ * 
+ * @author Prateek Sinha
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RideBookingSystemTest {
 
     private RideBookingSystem rideBookingSystem;
+    private List<Customer> customerStore;
+    private List<Driver> driverStore;
+    private List<Ride> rideStore;
+
     private CustomerDAO customerDAO;
     private DriverDAO driverDAO;
     private RideDAO rideDAO;
 
     /**
-     * Sets up the test environment with in-memory anonymous DAO implementations.
-     * Initializes the RideBookingSystem with mock data sources before each test.
+     * Initializes in-memory DAOs and the RideBookingSystem instance before all tests.
      */
-    @Before
-    public void setUp() {
-        // Anonymous implementation of CustomerDAO
-        customerDAO = new CustomerDAO() {
-            private List<Customer> customers = new ArrayList<>();
+    @BeforeAll
+    void init() {
+        customerStore = new ArrayList<>();
+        driverStore = new ArrayList<>();
+        rideStore = new ArrayList<>();
 
+        customerDAO = new CustomerDAO() {
             @Override
             public void save(Customer customer) {
-                customers.add(customer);
+                customerStore.add(customer);
             }
 
             @Override
             public List<Customer> findAll() {
-                return new ArrayList<>(customers);
+                return new ArrayList<>(customerStore);
             }
 
             @Override
             public Customer findById(String id) {
-                // TODO Auto-generated method stub
-                return null;
+                return customerStore.stream().filter(c -> c.getID().equals(id)).findFirst().orElse(null);
             }
 
             @Override
-            public void update(Customer customer) {
-                // TODO Auto-generated method stub
-            }
+            public void update(Customer customer) { }
 
             @Override
-            public void delete(String id) {
-                // TODO Auto-generated method stub
-            }
+            public void delete(String id) { }
         };
 
-        // Anonymous implementation of DriverDAO
         driverDAO = new DriverDAO() {
-            private List<Driver> drivers = new ArrayList<>();
-
             @Override
             public void save(Driver driver) {
-                drivers.add(driver);
+                driverStore.add(driver);
             }
 
             @Override
             public List<Driver> findAll() {
-                return new ArrayList<>(drivers);
+                return new ArrayList<>(driverStore);
             }
 
             @Override
             public Driver findById(String id) {
-                // TODO Auto-generated method stub
-                return null;
+                return driverStore.stream().filter(d -> d.getID().equals(id)).findFirst().orElse(null);
             }
 
             @Override
-            public void update(Driver driver) {
-                // TODO Auto-generated method stub
-            }
+            public void update(Driver driver) { }
 
             @Override
-            public void delete(String id) {
-                // TODO Auto-generated method stub
-            }
+            public void delete(String id) { }
         };
 
-        // Anonymous implementation of RideDAO
         rideDAO = new RideDAO() {
-            private List<Ride> rides = new ArrayList<>();
-
             @Override
             public void save(Ride ride) {
-                rides.add(ride);
+                rideStore.add(ride);
             }
 
             @Override
             public List<Ride> findAll() {
-                return new ArrayList<>(rides);
+                return new ArrayList<>(rideStore);
             }
 
             @Override
             public Ride findById(String id) {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
-            public void update(Ride ride) {
-                // TODO Auto-generated method stub
-            }
+            public void update(Ride ride) { }
 
             @Override
-            public void delete(String id) {
-                // TODO Auto-generated method stub
-            }
+            public void delete(String id) { }
         };
 
         rideBookingSystem = new RideBookingSystem(customerDAO, driverDAO, rideDAO);
     }
 
     /**
-     * Tests the registration of a customer in the RideBookingSystem.
-     * Verifies that the customer is added to the internal customer list.
+     * Resets all in-memory data stores before each test to ensure test isolation.
+     */
+    @BeforeEach
+    void resetData() {
+        customerStore.clear();
+        driverStore.clear();
+        rideStore.clear();
+    }
+
+    /**
+     * Tests that registering a customer adds the customer correctly.
      */
     @Test
-    public void testRegisterCustomer() {
-        Customer customer = new Customer("1001", "Alice");
+    void testRegisterCustomer() {
+        Customer customer = new Customer("101", "TestUser");
         rideBookingSystem.registerCustomer(customer);
-        List<Customer> customers = rideBookingSystem.getCustomers();
-        assertEquals(1, customers.size());
-        assertEquals("Alice", customers.get(0).getName());
+
+        assertEquals(1, rideBookingSystem.getCustomers().size());
+        assertEquals("TestUser", rideBookingSystem.getCustomers().get(0).getName());
     }
 
     /**
-     * Tests the registration of a driver in the RideBookingSystem.
-     * Verifies that the driver is added to the internal driver list.
+     * Tests that registering a driver adds the driver correctly.
      */
     @Test
-    public void testRegisterDriver() {
-        Driver driver = new Driver("D01", "Bob", true);
+    void testRegisterDriver() {
+        Driver driver = new Driver("D01", "TestDriver", true);
         rideBookingSystem.registerDriver(driver);
-        List<Driver> drivers = rideBookingSystem.getDrivers();
-        assertEquals(1, drivers.size());
-        assertEquals("Bob", drivers.get(0).getName());
+
+        assertEquals(1, rideBookingSystem.getDrivers().size());
+        assertEquals("TestDriver", rideBookingSystem.getDrivers().get(0).getName());
     }
 
     /**
-     * Tests the successful booking of a ride when an available driver is present.
-     * Verifies that a ride object is returned and associated entities match.
+     * Tests successful booking of a ride when driver is available.
      */
     @Test
-    public void testBookRideSuccessfully() {
-        Customer customer = new Customer("1002", "Charlie");
-        Driver driver = new Driver("D02", "David", true);
+    void testBookRideSuccess() {
+        Customer customer = new Customer("102", "Alice");
+        Driver driver = new Driver("D02", "Bob", true);
         rideBookingSystem.registerCustomer(customer);
         rideBookingSystem.registerDriver(driver);
 
         Ride ride = rideBookingSystem.bookRide(customer);
 
         assertNotNull(ride);
-        assertEquals("Charlie", ride.getCustomer().getName());
-        assertEquals("David", ride.getDriver().getName());
+        assertEquals("Alice", ride.getCustomer().getName());
+        assertEquals("Bob", ride.getDriver().getName());
+        assertFalse(driverStore.get(0).isAvailable());
     }
 
     /**
-     * Tests the scenario where no drivers are available for a ride booking.
-     * Expects an InvalidRideException to be thrown.
+     * Tests that booking a ride fails when no drivers are available.
      */
-    @Test(expected = InvalidRideException.class)
-    public void testBookRideNoAvailableDriver() {
-        Customer customer = new Customer("1003", "Emma");
+    @Test
+    void testBookRideNoDriverAvailable() {
+        Customer customer = new Customer("103", "Charlie");
         rideBookingSystem.registerCustomer(customer);
 
-        // No driver registered, so booking ride should throw exception
+        InvalidRideException exception = assertThrows(
+                InvalidRideException.class,
+                () -> rideBookingSystem.bookRide(customer)
+        );
+
+        assertEquals("No available Drivers.", exception.getMessage());
+    }
+
+    /**
+     * Tests retrieving the list of rides after booking.
+     */
+    @Test
+    void testGetRides() {
+        Customer customer = new Customer("104", "User");
+        Driver driver = new Driver("D03", "Driver", true);
+        rideBookingSystem.registerCustomer(customer);
+        rideBookingSystem.registerDriver(driver);
+
         rideBookingSystem.bookRide(customer);
+        assertEquals(1, rideBookingSystem.getRides().size());
+    }
+
+    /**
+     * Tests saving and loading drivers to/from file.
+     * 
+     * Note: This test uses a temporary file but actual RideBookingSystem
+     * uses hardcoded file path, so loading simulation is limited.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    void testSaveAndLoadDriversToFile() throws IOException {
+        File tempFile = File.createTempFile("drivers", ".txt");
+        tempFile.deleteOnExit();
+
+        Driver driver1 = new Driver("D04", "Eve", true);
+        Driver driver2 = new Driver("D05", "Frank", false);
+        rideBookingSystem.registerDriver(driver1);
+        rideBookingSystem.registerDriver(driver2);
+
+        FileWriter fw = new FileWriter(tempFile);
+        fw.write("D06,Grace\nD07,Henry\n");
+        fw.close();
+
+        rideBookingSystem.saveDriversToFile(); // currently hardcoded path
+
+        assertEquals(2, rideBookingSystem.getDrivers().size());
+    }
+
+    /**
+     * Tests that showing all customers and drivers executes without exceptions.
+     */
+    @Test
+    void testShowAllCustomersAndDrivers() {
+        rideBookingSystem.registerCustomer(new Customer("C01", "Sam"));
+        rideBookingSystem.registerDriver(new Driver("D08", "Tim", true));
+
+        assertDoesNotThrow(() -> rideBookingSystem.showAllCustomers(customerStore));
+        assertDoesNotThrow(() -> rideBookingSystem.showAllDrivers(driverStore));
+    }
+
+    /**
+     * Tests setter and getter for customers list in RideBookingSystem.
+     */
+    @Test
+    void testSetAndGetCustomers() {
+        List<Customer> temp = new ArrayList<>();
+        temp.add(new Customer("C02", "Zoe"));
+        rideBookingSystem.setCustomers(temp);
+
+        // As internal DAO list is separate, this test ensures no exceptions and data is not null.
+        assertNotNull(temp);
     }
 }

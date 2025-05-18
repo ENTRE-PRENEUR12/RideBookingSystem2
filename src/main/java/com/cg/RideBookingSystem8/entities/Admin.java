@@ -61,15 +61,6 @@ public class Admin extends User{
             }
 		}
 		
-		
-		for(int i=0;i<drivers.size();i++) {
-			if(((User) drivers).getID().equals(driverId)) {
-				drivers.remove(i);
-				System.out.println("Driver deleted Successfully...");
-				break;
-			}
-		}
 	}
-
 	
 }
